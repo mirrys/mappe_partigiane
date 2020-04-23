@@ -33,7 +33,7 @@ map.on('load', () => {
     map.addSource("25april-source",
         {
         "type": "vector",
-        "url": "mapbox://mirrys.6rxgf8bg"
+        "url": "mapbox://mirrys.43r8z6a7"
     });
 
     map.addSource("street-source",
@@ -49,7 +49,7 @@ map.on('load', () => {
         "id": "25april-layer",
         "type":"line",
         "source": "25april-source",
-        "source-layer": "final_tile-aatjzg",
+        "source-layer": "final_tile-al5fxc",
       
         "paint": {
             "line-color": [
@@ -76,6 +76,12 @@ map.on('load', () => {
         //closeOnClick: false, 
         className:"infopopup"
         });
+     // Create a popup, but don't add it to the map yet.
+    tempPopup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false, 
+        className:"infopopup"
+        });
 
     map.on('click', '25april-layer', (e) => {
 
@@ -90,11 +96,12 @@ map.on('load', () => {
             console.log(current_feature.properties, current_feature.geometry)
 
             // Personalize popup
-            popupHTML = "<p>"+name+"</p>"
+            popupHTML = "<div><object type=\"text/html\" data=\""+name+"\" width=\"400px\" height=\"600px\" style=\"overflow:auto;\"></object></div>"
 
 
         infoPopup.setLngLat(coordinates)
             .setHTML(popupHTML)
+            .setMaxWidth("700px")
             .addTo(map);
 
         }
@@ -106,18 +113,19 @@ map.on('load', () => {
 
     map.on('mousemove', '25april-layer',  (e) => {
         if (hoveredStateId) {
-        map.setFeatureState(
-        { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
-        { hover: false }
-        );
+            map.setFeatureState(
+                { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
+                { hover: false }
+            );
         }
-    hoveredStateId = e.features[0].id;
-    map.setFeatureState(
-    { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
-    { hover: true }
-    )
-    map.getCanvas().style.cursor = 'pointer';
-    });
+        current_feature=e.features[0]
+        hoveredStateId = current_feature.id;
+        map.setFeatureState(
+            { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
+            { hover: true }
+        )
+        map.getCanvas().style.cursor = 'pointer';
+        });
     // Change the cursor to a pointer when the mouse is over the places layer.
 
      
