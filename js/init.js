@@ -1,5 +1,6 @@
 var map = null;
 var infoPopup = null;
+var magDisplay = document.getElementById('name');
 
 var defaults = {
     zoom: 7,
@@ -124,6 +125,7 @@ map.on('load', () => {
             { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
             { hover: true }
         )
+        magDisplay.textContent = current_feature.properties.name
         map.getCanvas().style.cursor = 'pointer';
         });
     // Change the cursor to a pointer when the mouse is over the places layer.
@@ -136,6 +138,7 @@ map.on('load', () => {
         { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
         { hover: false }
         );
+        magDisplay.textContent=''
         }
     map.getCanvas().style.cursor = '';
     });
