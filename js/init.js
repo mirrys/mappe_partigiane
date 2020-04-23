@@ -1,6 +1,9 @@
 var map = null;
 var infoPopup = null;
 var magDisplay = document.getElementById('name');
+var filterEl = document.getElementById('feature-filter');
+var streets = []
+var hoveredStateId = null;
 
 var defaults = {
     zoom: 7,
@@ -13,9 +16,43 @@ var defaults = {
     mapContainer: 'map'
 }
 
+// function renderListings(features) {
+//     var empty = document.createElement('p');
+//     // Clear any existing listings
+//     if (features.length) {
+//     // Show the filter input
+//     filterEl.parentNode.style.display = 'block';
+//     } else  {
 
-var hoveredStateId = null;
+//     empty.textContent = 'No results found';
+//     // remove features filter
+//     map.setFilter('25april-layer', ['has', 'name']);
+//     }
+//     }
+     
 
+// function getUniqueFeatures(array, comparatorProperty) {
+//     var existingFeatureKeys = {};
+//     // Because features come from tiled vector data, feature geometries may be split
+//     // or duplicated across tile boundaries and, as a result, features may appear
+//     // multiple times in query results.
+//     var uniqueFeatures = array.filter(function(el) {
+//     if (existingFeatureKeys[el.properties[comparatorProperty]]) {
+//     return false;
+//     } else {
+//     existingFeatureKeys[el.properties[comparatorProperty]] = true;
+//     return true;
+//     }
+//     });
+//     console.log(uniqueFeatures[0])
+
+//     return uniqueFeatures;
+//     }
+     
+
+// function normalize(string) {
+// return string.trim().toLowerCase();
+// }
 mapboxgl.accessToken = defaults.accessToken;
 
 map = new mapboxgl.Map({
@@ -53,12 +90,12 @@ map.on('load', () => {
         "source-layer": "final_tile-al5fxc",
       
         "paint": {
-            "line-color": [
-            'case',
-            ['boolean', ['feature-state', 'hover'], false],
-            '#00acee',
-            'red'
-            ],
+             "line-color": [
+             'case',
+             ['boolean', ['feature-state', 'hover'], false],
+             '#00acee',
+             'red'
+             ],
             'line-width': [
                 'interpolate', 
                 ['exponential', 2], 
@@ -77,12 +114,7 @@ map.on('load', () => {
         //closeOnClick: false, 
         className:"infopopup"
         });
-     // Create a popup, but don't add it to the map yet.
-    tempPopup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false, 
-        className:"infopopup"
-        });
+ 
 
     map.on('click', '25april-layer', (e) => {
 
@@ -115,14 +147,14 @@ map.on('load', () => {
     map.on('mousemove', '25april-layer',  (e) => {
         if (hoveredStateId) {
             map.setFeatureState(
-                { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
+                { source: '25april-source', sourceLayer:'final_tile-al5fxc', id: hoveredStateId,},
                 { hover: false }
             );
         }
         current_feature=e.features[0]
         hoveredStateId = current_feature.id;
         map.setFeatureState(
-            { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
+            { source: '25april-source', sourceLayer:'final_tile-al5fxc', id: hoveredStateId,},
             { hover: true }
         )
         magDisplay.textContent = current_feature.properties.name
@@ -135,7 +167,7 @@ map.on('load', () => {
     map.on('mouseleave', '25april-layer' , (e) => {
     if (hoveredStateId) {
         map.setFeatureState(
-        { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
+        { source: '25april-source', sourceLayer:'final_tile-al5fxc', id: hoveredStateId,},
         { hover: false }
         );
         magDisplay.textContent=''
@@ -145,8 +177,44 @@ map.on('load', () => {
 
     map.addControl(new mapboxgl.NavigationControl(),'top-right');
 
+    // map.on('moveend', function() {
+    //     var features = map.queryRenderedFeatures({ layers: ['25april-layer'] });
+         
+    //     if (features) {
+    //     var uniqueFeatures = getUniqueFeatures(features, 'name');
+         
+    //     // Clear the input container
+    //     // Store the current features in sn `airports` variable to
+    //     // later use for filtering on `keyup`.
+    //     streets = uniqueFeatures;
+    //     }
+    //     });
 
+    // filterEl.addEventListener('keyup', function(e) {
+    //     var value = normalize(e.target.value);
+    //     console.log(value)
+    //     // Filter visible features that don't match the input value.
+    //     var filtered = streets.filter(function(feature) {
+    //     var name = normalize(feature.properties.name);
+    //     return name.indexOf(value) > -1;
+    //     });
+    //     console.log(name)
 
+    //     renderListings(filtered);
+
+    //     // Set the filter to populate features into the layer.
+    //     if (filtered.length) {
+    //     map.setFilter('25april-layer', [
+    //     'match',
+    //     ['get', 'name'],
+    //     filtered.map(function(feature) {
+    //     return feature.properties.name;
+    //     }),
+    //     true,
+    //     false
+    //     ]);
+    //     }
+    //     });
 
     var geocoderSearchbar = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
@@ -167,5 +235,6 @@ map.on('load', () => {
     })
 
     map.addControl(geocoderSearchbar, 'top-right');
+  //  renderListings([]);
 
 });
