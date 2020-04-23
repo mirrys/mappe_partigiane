@@ -13,6 +13,7 @@ var defaults = {
 }
 
 
+var hoveredStateId = null;
 
 mapboxgl.accessToken = defaults.accessToken;
 
@@ -103,14 +104,19 @@ map.on('load', () => {
     });
 
 
-    map.on('mouseenter', '25april-layer',  (e) => {
+    map.on('mousemove', '25april-layer',  (e) => {
+        if (hoveredStateId) {
+        map.setFeatureState(
+        { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
+        { hover: false }
+        );
+        }
     hoveredStateId = e.features[0].id;
     map.setFeatureState(
-    { source: '25april-source', sourceLayer:'25april', id: hoveredStateId,},
+    { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
     { hover: true }
     )
     map.getCanvas().style.cursor = 'pointer';
-
     });
     // Change the cursor to a pointer when the mouse is over the places layer.
 
@@ -119,7 +125,7 @@ map.on('load', () => {
     map.on('mouseleave', '25april-layer' , (e) => {
     if (hoveredStateId) {
         map.setFeatureState(
-        { source: '25april-source', sourceLayer:'25april', id: hoveredStateId,},
+        { source: '25april-source', sourceLayer:'final_tile-aatjzg', id: hoveredStateId,},
         { hover: false }
         );
         }
